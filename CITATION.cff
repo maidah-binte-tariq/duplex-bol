@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: "duplex-bol: a full-duplex Pakistani-Urdu speech-to-speech research scaffold"
+message: "If you use this scaffold or its data-engineering tooling, please cite it."
+type: software
+authors:
+  - name: "duplex-bol contributors"
+repository-code: "https://github.com/maidah-binte-tariq/duplex-bol"
+license: Apache-2.0
+keywords:
+  - urdu
+  - speech-to-speech
+  - full-duplex
+  - barge-in
+  - moshi
+abstract: >-
+  A one-week proof-of-concept scaffold for a full-duplex Pakistani-Urdu voice
+  agent. Provides Urdu text normalization, audio/manifest data engineering,
+  two-party stereo corpus synthesis for Moshi-style fine-tuning, a deterministic
+  barge-in orchestrator for a streaming ASR→LLM→TTS cascade, and a WER/latency
+  evaluation harness.

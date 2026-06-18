@@ -1,0 +1,117 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "duplex-bol"
+version = "0.1.0"
+description = "Full-duplex Pakistani-Urdu speech-to-speech research scaffold: data engineering, a barge-in cascade, and a Moshi fine-tuning path."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+keywords = ["urdu", "speech-to-speech", "full-duplex", "asr", "tts", "voice-agent", "moshi"]
+authors = [{ name = "duplex-bol contributors" }]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Multimedia :: Sound/Audio :: Speech",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Natural Language :: Urdu",
+]
+
+# Runtime deps are deliberately thin. The heavy model stacks (moshi, torch,
+# transformers, pipecat) live behind extras so the data + eval core installs in
+# seconds on a Kaggle worker and stays import-light for CI.
+dependencies = [
+  "numpy>=1.26",
+  "pydantic>=2.6",
+  "PyYAML>=6.0",
+  "typer>=0.12",
+]
+
+[project.optional-dependencies]
+# Track A — the Moshi fine-tuning path needs a SentencePiece tokenizer to swap
+# the English vocab for an Urdu one. Kept optional: the C extension is the only
+# thing in here that isn't pure-Python.
+moshi = ["sentencepiece>=0.2.0"]
+# Track B — the cascade reference stack. Not exercised in CI (needs GPUs + audio
+# devices), wired here so `pip install duplex-bol[cascade]` is one command.
+cascade = [
+  "pipecat-ai>=0.0.40",
+  "faster-whisper>=1.0",
+]
+dev = [
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+  "ruff>=0.6",
+  "mypy>=1.11",
+  "types-PyYAML>=6.0",
+  "pre-commit>=3.7",
+]
+
+[project.scripts]
+duplex-bol = "duplex_bol.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/maidah-binte-tariq/duplex-bol"
+Issues = "https://github.com/maidah-binte-tariq/duplex-bol/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/duplex_bol"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+  "E", "F", "W",   # pycodestyle + pyflakes
+  "I",             # isort
+  "N",             # pep8-naming
+  "UP",            # pyupgrade
+  "B",             # flake8-bugbear
+  "C4",            # comprehensions
+  "SIM",           # flake8-simplify
+  "RUF",           # ruff-specific
+]
+# B905 (zip strict=) is noisy on 3.11 targets; we opt in where it matters.
+# RUF001/002/003 flag "ambiguous" Unicode — but this is an Urdu codebase, so
+# Nastaliq letters (which resemble Latin glyphs to the linter) are everywhere and
+# entirely intentional. Disabling the confusable check is correct here, not lazy.
+ignore = ["B905", "RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests lean on long descriptive asserts and fixture literals.
+"tests/*" = ["E501"]
+# Typer's whole API is `arg: T = typer.Option(...)` in defaults — B008 is wrong here.
+"src/duplex_bol/cli.py" = ["B008"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unreachable = true
+plugins = ["pydantic.mypy"]
+# The optional model stacks have no type stubs; don't fail the core on them.
+[[tool.mypy.overrides]]
+module = ["sentencepiece.*", "soundfile.*", "pipecat.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra --strict-markers --strict-config"
+testpaths = ["tests"]
+markers = [
+  "slow: end-to-end checks that touch the synthetic corpus builder",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["duplex_bol"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]

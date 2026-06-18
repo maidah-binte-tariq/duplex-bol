@@ -7,21 +7,7 @@ all* question, see the [feasibility report](feasibility-report.md) and
 
 ## The cascade, in one picture
 
-```
-caller audio (frames)
-      │
-      ▼
-   ┌──────┐   speech?    ┌───────────────────────┐
-   │ VAD  │─────────────▶│  DuplexOrchestrator    │
-   └──────┘              │  (LISTENING/SPEAKING)  │
-      │                  └───────────────────────┘
-      ▼                       │        ▲   │ cancel
-   ┌──────┐  text   ┌──────┐  │ reply  │   ▼
-   │ ASR  │────────▶│ LLM  │──┘        ┌──────┐  audio
-   │ ear  │         │brain │           │ TTS  │────────▶ bot audio
-   └──────┘         └──────┘           │mouth │
-                                       └──────┘
-```
+![Cascade architecture](assets/architecture.png)
 
 Three model components in a line — ear, brain, mouth — plus a VAD whose only job is
 to tell the orchestrator *"the caller is talking right now"*. The orchestrator is the
@@ -65,14 +51,7 @@ the policy it encodes doesn't change.
 
 ### States and the transitions that matter
 
-```
-        caller stops (VAD offset, debounced)
-LISTENING ──────────────────────────────────▶ SPEAKING
-    ▲                                              │
-    │   caller barges in (VAD onset, debounced)    │
-    └──────────────────────────────────────────────┘
-             OR  bot finishes its turn
-```
+![Orchestrator state machine](assets/state_machine.png)
 
 - **LISTENING** — feed speech frames to the ASR, emit partial transcripts. When the
   VAD confirms the caller stopped (offset), finalize, ask the brain, start the TTS.
@@ -101,6 +80,11 @@ Two latencies, recorded into a [`LatencyTracker`](../src/duplex_bol/eval/latency
   it's *bounded by design* (~60 ms with the defaults). Budget: ≤ 500 ms (H4).
 - **`response_start`** — from the caller's last speech frame to the bot's first audio
   chunk. Covers the offset debounce plus brain + TTS spin-up. Budget: ≤ 1000 ms (H5).
+
+Both fall straight out of the event stream. This timeline is rendered from a real run
+(`scripts/make_figures.py`), not drawn by hand:
+
+![Barge-in timeline](assets/barge_in_timeline.png)
 
 The `make demo` trace and the CLI's latency table come straight out of this.
 

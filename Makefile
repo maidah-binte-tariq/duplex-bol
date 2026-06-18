@@ -4,7 +4,7 @@
 .DEFAULT_GOAL := help
 PY := uv run
 
-.PHONY: help setup test lint format typecheck check demo demo-corpus clean
+.PHONY: help setup test lint format typecheck check demo demo-corpus figures clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -35,6 +35,9 @@ demo: ## Run the fake cascade end-to-end and print the latency budget
 
 demo-corpus: ## Generate a tiny synthetic corpus under data/demo/
 	$(PY) python scripts/make_demo_corpus.py --out data/demo
+
+figures: ## Regenerate docs/assets/ diagrams from live code
+	uv pip install -q matplotlib && $(PY) python scripts/make_figures.py
 
 clean: ## Remove caches and build artifacts
 	rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov .coverage dist build

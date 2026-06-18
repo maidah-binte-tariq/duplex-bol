@@ -91,6 +91,8 @@ Moshi learns from **two people talking at once, on separate stereo channels**: t
 agent on the left, the user on the right, overlaps and all. That overlap is exactly
 what teaches it to listen while it speaks.
 
+![Two-party stereo synthesis](assets/stereo_synthesis.png)
+
 The problem: **no two-party Urdu audio exists to download.** So we manufacture it —
 the same move the J-Moshi team used for Japanese. "Single-voice clip" means one person
 per file; you still need *two different speakers* across your clips, one per channel.

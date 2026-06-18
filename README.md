@@ -73,24 +73,16 @@ overall: PASS
 
 That trace is produced by a real state machine driving fake-but-deterministic
 components. Swap the fakes for Whisper / an LLM / an Urdu TTS and the same policy
-drives a live call.
+drives a live call. The timeline below is rendered **directly from those events**
+(`scripts/make_figures.py`) — the 60 ms stop is measured, not drawn:
+
+<p align="center"><img src="docs/assets/barge_in_timeline.png" width="820" alt="Barge-in timeline measured from the orchestrator"></p>
 
 ---
 
 ## How it fits together
 
-```mermaid
-flowchart LR
-    subgraph TrackB[Track B - cascade]
-        MIC[caller audio] --> VAD[Energy VAD]
-        VAD --> ASR[ASR - ear]
-        ASR --> LLM[LLM - brain]
-        LLM --> TTS[TTS - mouth]
-        TTS --> OUT[bot audio]
-        VAD -. speech detected .-> ORCH{{DuplexOrchestrator: barge-in policy}}
-        ORCH -. cancel .-> TTS
-    end
-```
+<p align="center"><img src="docs/assets/architecture.png" width="880" alt="Track B cascade architecture"></p>
 
 The interesting part is the **orchestrator**: an inherently async, real-time problem
 (keep listening while speaking; stop fast when interrupted) refactored into a
@@ -104,6 +96,8 @@ another on the right with a touch of overlap, and you have the stereo
 conversation format Moshi trains on. That's
 [`duplex_bol.data.build_dialogue`](src/duplex_bol/data/stereo_dialogue.py), and the
 [data-engineering doc](docs/data-engineering.md) explains it from scratch.
+
+<p align="center"><img src="docs/assets/stereo_synthesis.png" width="820" alt="Two-party stereo synthesis: agent left, user right, with overlap"></p>
 
 ---
 

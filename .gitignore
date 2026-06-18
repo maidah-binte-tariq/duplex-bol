@@ -21,7 +21,8 @@ htmlcov/
 
 # Data + model artifacts never belong in git. The pipeline re-derives everything
 # from `data/raw/`, and weights live on the Hub. See docs/data-engineering.md.
-data/
+# Leading slash anchors to repo root so it doesn't swallow src/duplex_bol/data/.
+/data/
 artifacts/
 *.wav
 *.webm

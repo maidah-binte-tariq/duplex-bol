@@ -1,0 +1,38 @@
+# Track B — cascade reference config.
+#
+# This is documentation-as-config: it records the component choices and the
+# barge-in tuning the orchestrator runs with. The pure orchestrator in
+# duplex_bol.cascade is driven by injected components, so wiring these names to
+# real adapters is the integration step (see docs/architecture.md).
+
+asr:
+  # The "ear". Whisper-large-v3 is the safe default; Qwen3-Omni can listen to
+  # Urdu but CANNOT speak it, so it is ear-only if used.
+  engine: faster-whisper
+  model: large-v3
+  language: ur
+  sample_rate: 16000   # what the recognizer expects (mono)
+
+llm:
+  # The "brain". Any fast Urdu-capable instruct model.
+  engine: openai-compatible
+  model: qwen2.5-7b-instruct
+  system_prompt: >-
+    آپ ایک مددگار اردو بولنے والے کال ایجنٹ ہیں۔ مختصر، فطری جملوں میں جواب دیں۔
+  max_tokens: 128
+
+tts:
+  # The "mouth". Open Urdu voices are experimental — budget time on prosody.
+  engine: orpheus-urdu
+  model: mahwizzzz/orpheus-urdu-tts
+  sample_rate: 24000
+
+# Barge-in / VAD tuning. These map 1:1 onto BargeInDetector + the latency budget.
+barge_in:
+  frame_duration_ms: 20
+  onset_frames: 3        # ~60 ms of speech confirms the caller has barged in
+  hangover_frames: 5     # ~100 ms of silence confirms the caller has stopped
+
+budget_ms:
+  barge_in_stop: 500     # H4
+  response_start: 1000   # H5

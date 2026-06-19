@@ -13,10 +13,25 @@ and you can hear the exact stereo layout Moshi trains on (and the deliberate
 overlap that teaches simultaneous speech). It is **not** a fine-tuned voice, and it
 isn't presented as one.
 
-## Where the real fine-tuned voice samples come from
+## Hear real Urdu speech right now — `generate_tts_sample.py`
 
-A genuine fine-tuned **Urdu voice** sample requires a GPU run — we don't ship
-fabricated clips. The notebooks produce them:
+For an actual Urdu voice clip (not tones), run the included generator. It uses
+Meta's open **MMS-TTS Urdu** model — small, CPU-runnable, one forward pass:
+
+```bash
+pip install "duplex-bol[tts]"            # transformers + torch
+python samples/generate_tts_sample.py    # -> samples/urdu_tts_mms.wav
+```
+
+This produces **genuine Urdu speech from the base open model** — it is *not* a model
+we fine-tuned, and the script prints that disclaimer. It is **not run in this repo's
+build/CI sandbox**, which is network-restricted (no Hugging Face access); run it in a
+Kaggle/Colab cell or on your laptop, where it takes a few seconds.
+
+## Where the *fine-tuned* voice samples come from
+
+A genuine **fine-tuned** Urdu voice (the actual product goal, H7) requires a GPU run —
+we don't ship fabricated clips. The notebooks produce them:
 
 - `notebooks/01_cascade_track_b_kaggle.ipynb` — fine-tunes an Urdu TTS voice on the
   3-speaker set; the held-out clips it generates are the H7 listening test.

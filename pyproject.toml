@@ -45,6 +45,8 @@ cascade = [
 ]
 # Figures — regenerate the diagrams in docs/assets/ via scripts/make_figures.py.
 figures = ["matplotlib>=3.8"]
+# TTS — synthesize a real Urdu clip with an open model (samples/generate_tts_sample.py).
+tts = ["transformers>=4.40", "torch>=2.2"]
 dev = [
   "pytest>=8.0",
   "pytest-cov>=5.0",

@@ -1,0 +1,38 @@
+{
+  "fertility": {
+    "held_out_sentences": 10,
+    "held_out_words": 72,
+    "rows": {
+      "byte_fallback": {
+        "name": "byte-fallback (no Urdu vocab)",
+        "tokens_per_word": 7.014,
+        "chars_per_token": 0.618
+      },
+      "char": {
+        "name": "character-level",
+        "tokens_per_word": 4.333,
+        "chars_per_token": 1.0
+      },
+      "urdu_spm": {
+        "name": "Urdu SentencePiece (vocab 171)",
+        "tokens_per_word": 2.778,
+        "chars_per_token": 1.56
+      }
+    },
+    "spm_vs_bytes_speedup": 2.53
+  },
+  "latency": {
+    "barge_in_stop_ms_by_onset_frames": {
+      "2": 40.0,
+      "3": 60.0,
+      "4": 80.0,
+      "5": 100.0
+    },
+    "response_start_ms_by_hangover_frames": {
+      "3": 80.0,
+      "5": 120.0,
+      "7": 160.0
+    },
+    "default_within_budget": true
+  }
+}

@@ -101,6 +101,34 @@ conversation format Moshi trains on. That's
 
 ---
 
+## Results
+
+Measured on a laptop by `make bench` — no GPU, no hand-typed numbers. Full report:
+[`docs/RESULTS.md`](docs/RESULTS.md).
+
+**The Urdu tokenizer swap pays off — measured, not asserted.** On held-out Urdu the
+trained Urdu SentencePiece vocab is **2.53× leaner** than the byte fallback an
+Urdu-blind tokenizer is forced into (2.78 vs 7.01 tokens/word). That's the
+quantitative case for Track A:
+
+<p align="center"><img src="docs/assets/tokenizer_fertility.png" width="700" alt="Tokenizer fertility on held-out Urdu"></p>
+
+**Latency clears the acceptance budget with margin** (deterministic by construction):
+
+| metric | measured | budget |
+|---|---:|---:|
+| barge-in stop (H4) | **60 ms** | ≤ 500 ms |
+| response start (H5) | **120 ms** | ≤ 1000 ms |
+
+ASR WER and TTS quality (H3 / H6 / H7) require a GPU run — the **scoring harness
+ships here** (`duplex_bol.eval`), the numbers come from the [notebooks](notebooks/).
+They are deliberately not fabricated. A worked reference call is in
+[`samples/example_call.md`](samples/example_call.md), and
+[`samples/two_party_demo.wav`](samples/two_party_demo.wav) lets you hear the stereo
+training format.
+
+---
+
 ## What's actually in here
 
 ```
@@ -184,6 +212,7 @@ without a GPU. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Documentation
 
+- [Results & benchmarks](docs/RESULTS.md) — measured tokenizer fertility + latency, and what still needs a GPU
 - [Architecture](docs/architecture.md) — the cascade, the orchestrator state machine, swapping in real components
 - [Data engineering](docs/data-engineering.md) — from a pile of downloads to trainer-ready manifests
 - [Feasibility report](docs/feasibility-report.md) — models, datasets, hardware, licensing (the why behind the two tracks)

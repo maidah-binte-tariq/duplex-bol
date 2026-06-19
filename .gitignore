@@ -32,6 +32,7 @@ artifacts/
 *.bin
 *.safetensors
 !tests/**/*.wav
+!samples/**/*.wav
 
 # Local env
 .env
